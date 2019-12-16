@@ -1,4 +1,4 @@
-package com.gahon.springboot.cas.core.excludeStrategy;
+package com.gahon.springboot.cas.core.excludestrategy;
 
 import org.jasig.cas.client.authentication.UrlPatternMatcherStrategy;
 import org.springframework.util.AntPathMatcher;
@@ -14,7 +14,7 @@ import java.net.URISyntaxException;
  * @author Gahon
  * @date 2019/12/3
  */
-public class AntPathMatchStrategy implements UrlPatternMatcherStrategy {
+public class AntPathMatcherStrategy implements UrlPatternMatcherStrategy {
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private String[] patterns;

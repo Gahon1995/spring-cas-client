@@ -2,14 +2,21 @@ package com.gahon.springmvc.cas.core.profile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
  * 该类为自定义用户信息类，
- * * 用户根据cas服务端传回来的用户信息进行定义
- * *
- * * @author Gahon
- * * @date 2019/11/5
+ * <p>
+ * 用户根据cas服务端传回来的用户信息进行自定义
+ * <p>
+ * 如果不知道具体有哪些属性，请打断点或者打印该类中的attributes属性即可
+ * <p>
+ * 只需要生成get方法和toString就行
+ *
+ * @author Gahon
+ * @date 2019/11/5
  */
 public class UserProfile {
 
@@ -22,10 +29,6 @@ public class UserProfile {
      * 用户姓名
      */
     private String userName;
-    /**
-     * 登录名，通常和用户名一致
-     */
-    private String loginName;
 
     /**
      * 密码，最长不超过20位
@@ -33,26 +36,10 @@ public class UserProfile {
     @JsonIgnore
     private String password;
 
-    /**
-     * 性别
-     */
-    private String sex;
 
     /**
-     * 生日 yyyy-MM-dd
+     * 保存了从cas返回的所有属性
      */
-    private String birthday;
-
-    /**
-     * 学历
-     */
-    private String education;
-
-    /**
-     * 组织结构id
-     */
-    private String organizationId;
-
     private Map<String, Object> attributes;
 
     /**
@@ -61,13 +48,17 @@ public class UserProfile {
     private UserProfile(Map<String, Object> attributes) {
         this.attributes = attributes;
         this.id = (String) attributes.get("id");
-        this.userName = (String) attributes.get("user_name");
-        this.loginName = (String) attributes.get("login_name");
+        this.userName = (String) attributes.get("username");
         this.password = (String) attributes.get("password");
-        this.sex = (String) attributes.get("sex");
-        this.birthday = (String) attributes.get("birthday");
-        this.education = (String) attributes.get("education");
-        this.organizationId = (String) attributes.get("organization_id");
+//        请根据上述格式自定义该类，将返回属性列表中需要的信息保存在该类中，方便其他地方获取, 自定义完成以后便可以删除下边内容了
+        System.out.println("当前返回属性: ");
+        final List<String> strings = Arrays.asList("credentialType", "isFromNewLogin", "authenticationDate", "authenticationMethod", "successfulAuthenticationHandlers", "longTermAuthenticationRequestTokenUsed");
+        attributes.forEach((s, o) -> {
+            if (!strings.contains(s)) {
+                System.out.println(s + " = " + o);
+            }
+        });
+        throw new RuntimeException("未自定义用户信息类, 请根据上边的属性自定义用户信息表");
     }
 
     /**
@@ -88,36 +79,12 @@ public class UserProfile {
         return userName;
     }
 
-    public String getLoginName() {
-        return loginName;
-    }
-
     public String getPassword() {
         return password;
     }
 
-    public String getSex() {
-        return sex;
-    }
-
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public String getEducation() {
-        return education;
-    }
-
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
     public Map<String, Object> getAttributes() {
         return attributes;
-    }
-
-    public Object getAttribute(String name) {
-        return attributes == null ? null : attributes.get(name);
     }
 
     @Override
@@ -125,13 +92,7 @@ public class UserProfile {
         return "UserProfile{" +
                 "id='" + id + '\'' +
                 ", userName='" + userName + '\'' +
-                ", loginName='" + loginName + '\'' +
-                ", password='" + password + '\'' +
-                ", sex='" + sex + '\'' +
-                ", birthday='" + birthday + '\'' +
-                ", education='" + education + '\'' +
-                ", organizationId='" + organizationId + '\'' +
-                ", attributes=" + attributes +
+                ", password='" + password +
                 '}';
     }
 }
