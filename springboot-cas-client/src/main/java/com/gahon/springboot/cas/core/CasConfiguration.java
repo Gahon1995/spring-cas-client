@@ -1,5 +1,8 @@
 package com.gahon.springboot.cas.core;
 
+import com.gahon.springboot.cas.core.filter.AutoAuthFilter;
+import com.gahon.springboot.cas.core.filter.ContextThreadLocalFilter;
+import com.gahon.springboot.cas.core.util.CasUtils;
 import org.jasig.cas.client.boot.configuration.CasClientConfiguration;
 import org.jasig.cas.client.boot.configuration.CasClientConfigurationProperties;
 import org.jasig.cas.client.boot.configuration.CasClientConfigurer;

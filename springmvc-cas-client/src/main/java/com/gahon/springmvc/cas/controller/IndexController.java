@@ -1,7 +1,7 @@
 package com.gahon.springmvc.cas.controller;
 
-import com.gahon.springmvc.cas.core.CasUtils;
-import com.gahon.springmvc.cas.core.UserProfile;
+import com.gahon.springmvc.cas.core.util.CasUtils;
+import com.gahon.springmvc.cas.core.profile.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;

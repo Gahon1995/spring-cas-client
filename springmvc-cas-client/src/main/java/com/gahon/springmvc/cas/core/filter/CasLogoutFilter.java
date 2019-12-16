@@ -1,4 +1,4 @@
-package com.gahon.springmvc.cas.core;
+package com.gahon.springmvc.cas.core.filter;
 
 import org.springframework.util.StringUtils;
 

@@ -1,4 +1,4 @@
-package com.gahon.springmvc.cas.core.exclude_strategy;
+package com.gahon.springmvc.cas.core.excludestrategy;
 
 import org.jasig.cas.client.authentication.UrlPatternMatcherStrategy;
 import org.springframework.util.AntPathMatcher;

@@ -1,5 +1,6 @@
-package com.gahon.springmvc.cas.core;
+package com.gahon.springmvc.cas.core.filter;
 
+import com.gahon.springmvc.cas.core.util.CasUtils;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AssertionHolder;
 import org.jasig.cas.client.validation.Assertion;

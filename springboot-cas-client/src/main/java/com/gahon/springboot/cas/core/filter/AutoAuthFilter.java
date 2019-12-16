@@ -1,5 +1,7 @@
-package com.gahon.springboot.cas.core;
+package com.gahon.springboot.cas.core.filter;
 
+import com.gahon.springboot.cas.core.util.CasUtils;
+import com.gahon.springboot.cas.core.profile.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

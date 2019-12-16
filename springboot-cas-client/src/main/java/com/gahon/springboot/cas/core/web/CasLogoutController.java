@@ -1,4 +1,4 @@
-package com.gahon.springboot.cas.core;
+package com.gahon.springboot.cas.core.web;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

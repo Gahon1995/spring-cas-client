@@ -1,4 +1,4 @@
-package com.gahon.springboot.cas.core;
+package com.gahon.springboot.cas.core.profile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

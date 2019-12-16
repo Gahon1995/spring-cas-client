@@ -3,11 +3,8 @@
 ***注: 如果cas server与cas client在同一个host或ip上会导致单点登出失效***
 
 ## 一、 SpringBoot 集成
-
 ### 1. 引入依赖
-
 #### ①	maven方式
-
 ```xml
 <!--cas的客户端 -->
 <dependency>
@@ -16,19 +13,12 @@
     <version>3.6.1</version>
 </dependency>
 ```
-
 #### ②	jar包方式
-
-将目录中的jars/springboot中的jar包引入项目中（核心jar包为`cas-client-*`开头的三个jar包，其他的为该jar包依赖的包，根据自己项目是否已经引入确定是否加入)，完整的依赖如下,如果无法使用，请根据下述依赖去maven仓库中下载对应的包引入自己项目中:
-
-![image-20191204160133494](C:\Users\Gahon\AppData\Roaming\Typora\typora-user-images\image-20191204160133494.png)
-
+完整的依赖如下，请根据下述依赖去maven仓库中下载对应的包引入自己项目中(其中`cas-client-support-saml`这个包和`joda-time`可以不引入):
+![image-20191204160133494](https://raw.githubusercontent.com/Gahon1995/spring-cas-client/master/img/image-20191204160133494.png)
 ### 2. 自定义配置文件
-
-将`cas`目录下的所有文件复制到项目中，并且修复相关错误。
-
+将`com.gahon.springboot.cas.core`目录下的所有文件复制到项目中，并且修复相关错误。
 ### 3. 配置全局用户信息获取
-
 请根据后端返回的属性修改`UserProfile.java`类为正确的内容，保证`buildFromAttributes()`方法不被修改。
 
 配置好以后，便可以在其他需要获取当前登录的用户信息的地方调用 `CasUtils.getLoginUserInfo()` 便能够获取到用户信息。
@@ -76,11 +66,14 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 
 ### 7. 配置不过滤某些地址
 
-通过自定义`UrlPatternMatcherStrategy`和`pathPattern`来达到跳过验证的目的。
+通过自定义`ignorePattern`和`ignoreUrlPatternType`来达到跳过验证的目的。
 
 已经自带了一个路径排除策略（Ant规则，不懂请百度），可以只需要配置好`cas-config.ignore-pattern` 和 `cas-config.ignore-url-pattern-type`便能直接使用了，如果自带的不能够满足，请看末尾自定义教程。
 
-### 8. 集成后测试
+### 8. 与原有用户系统结合
+已经添加了一个`AutoAuthFilter`来方便结合了，具体如何去实现请看该类里边得相关说明
+
+### 9. 集成后测试
 
 1. 访问一个被拦截的url，验证是否能跳转到登录页面，并且在登录后能够正确验证
 2. 验证是否能够在登录以后，通过`CasUtils.getLoginUserInfo()`获取登录用户信息
@@ -88,11 +81,11 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 4. 验证是否能够正确登出（表现为退出登录以后再次进入登录页面（如果回调页面需要登录的话）
 5. 验证在服务端直接退出登录以后，客户端是否需要重新登录
 
-### 9. 其他配置
+### 10. 其他配置
 
 详见 **Github** (https://github.com/apereo/java-cas-client#spring-boot-autoconfiguration)
 
-### 10. FAQ
+### 11. FAQ
 
 统一在文件末尾部分
 
@@ -111,15 +104,11 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 ```
 
 #### ②	jar包方式
-
-将目录中的jars/springmvc中的jar包引入项目中（核心jar包为`cas-client-*`开头的jar包，其他的为该jar包依赖的包，根据自己项目是否已经引入确定是否加入)，完整的依赖如下,如果无法使用，请根据下述依赖去maven仓库中下载对应的包引入自己项目中:
-
-![image-20191204160618120](C:\Users\Gahon\AppData\Roaming\Typora\typora-user-images\image-20191204160618120.png)
+完整的依赖如下,如果无法使用，请根据下述依赖去maven仓库中下载对应的包引入自己项目中:
+![image-20191204160618120](https://raw.githubusercontent.com/Gahon1995/spring-cas-client/master/img/image-20191204160618120.png)
 
 ###  2.  配置`web.xml`
-
-在配置之前，需要先将`springmv/cas`下的所有文件复制到项目中，并解决相关包问题，然后在web.xml中配置如下
-
+在配置之前，需要先将`com.gahon.springmvc.cas.core`下的所有文件复制到项目中，并解决相关包问题，然后在web.xml中配置如下
 ```xml
 <!-- ====================	单点登录配置开始	==================== -->
 <!--	配置单点登出	-->
@@ -129,7 +118,7 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
     <filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
     <init-param>
         <param-name>casServerUrlPrefix</param-name>
-        <param-value>http://ip:port/cas</param-value> <!-- cas server前缀地址 -->
+        <param-value>http://cas.server.com:8088/cas</param-value> <!-- cas server前缀地址 -->
     </init-param>
 </filter>
 <!--	单点登出Listener	-->
@@ -144,21 +133,21 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
     <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
     <init-param>
         <param-name>casServerLoginUrl</param-name>
-        <param-value>http://ip:port/cas/login</param-value> <!-- cas server前缀地址 -->
+        <param-value>http://cas.server.com:8088/cas/login</param-value> <!-- cas server前缀地址 -->
     </init-param>
     <init-param>
         <param-name>serverName</param-name>
-        <param-value>http://ip:port/xxx</param-value> <!-- cas client地址， #号后边的内容会丢失 -->
+        <param-value>http://cas.client.com:8080</param-value> <!-- cas client地址， #号后边的内容会丢失 -->
     </init-param>
     <init-param>
         <param-name>ignoreUrlPatternType</param-name>
         <!--    可填自定义路径匹配类的cas自带的四种匹配名称 -->
-        <param-value>your.project.path.cas.CustomExcludePathMatchStrategy</param-value>
+        <param-value>com.gahon.springmvc.cas.core.excludestrategy.AntPathMatchStrategy</param-value>
     </init-param>
     <init-param>
         <param-name>ignorePattern</param-name>
         <!--    不需要进行登录验证的路径, 示例采用的是antMatcher模式,根据自定义的编写   -->
-        <param-value>/ignore_path1,/ignore_path2</param-value>
+        <param-value>/, /statics/**,/favicon.ico, /ignore</param-value>
     </init-param>
 </filter>
 
@@ -168,11 +157,11 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
     <filter-class>org.jasig.cas.client.validation.Cas30ProxyReceivingTicketValidationFilter</filter-class>
     <init-param>
         <param-name>casServerUrlPrefix</param-name>
-        <param-value>http://ip:port/cas</param-value>  <!-- cas server前缀地址 -->
+        <param-value>http://cas.server.com:8088/cas</param-value>  <!-- cas server前缀地址 -->
     </init-param>
     <init-param>
         <param-name>serverName</param-name>
-        <param-value>http://ip:port/xxx</param-value>    <!-- cas client前缀地址   #号后边的内容会丢失-->
+        <param-value>http://cas.client.com:8080</param-value>    <!-- cas client前缀地址   #号后边的内容会丢失-->
     </init-param>
     <init-param>
         <param-name>redirectAfterValidation</param-name>
@@ -200,14 +189,19 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 <filter>
     <filter-name>CAS Custom Context Thread Local Filter</filter-name>
     <!--    请更改为正确的路径    -->
-    <filter-class>your.project.path.cas.ContextThreadLocalFilter</filter-class>
+    <filter-class>com.gahon.springmvc.cas.core.filter.ContextThreadLocalFilter</filter-class>
+</filter>
+<filter>
+    <filter-name>Auto Auth Filter</filter-name>
+    <!--    请更改为正确的路径    -->
+    <filter-class>com.gahon.springmvc.cas.core.filter.AutoAuthFilter</filter-class>
 </filter>
 
 <!--    配置退出登录过滤器 -->
 <filter>
     <filter-name>CAS Logout Filter</filter-name>
     <!--    请更改为正确的路径    -->
-    <filter-class>your.project.path.cas.CasLogoutFilter</filter-class>
+    <filter-class>com.gahon.springmvc.cas.core.filter.CasLogoutFilter</filter-class>
     <init-param>
         <!--   退出登录以后跳转回来的地址   -->
         <param-name>logoutDefaultUrl</param-name>
@@ -216,7 +210,7 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
     <init-param>
         <!--   cas 服务端地址   -->
         <param-name>serverUrlPrefix</param-name>
-        <param-value>http://ip:port/cas</param-value>
+        <param-value>http://cas.server.com:8088/cas</param-value>
     </init-param>
     <init-param>
         <!--    是否中央退出登录    -->
@@ -245,7 +239,7 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
     <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
     <url-pattern>/*</url-pattern>
 </filter-mapping>
-<!-- 下边两个Filter顺序不能更改 -->
+<!-- 下边三个Filter顺序不能更改 -->
 <filter-mapping>
     <filter-name>CAS Assertion Thread Local Filter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -253,6 +247,11 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 
 <filter-mapping>
     <filter-name>CAS Custom Context Thread Local Filter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+<filter-mapping>
+    <filter-name>Auto Auth Filter</filter-name>
     <url-pattern>/*</url-pattern>
 </filter-mapping>
 
@@ -265,14 +264,7 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 ```
 
 ### 3. 配置全局用户信息获取
-
-#### ① 使用自定义类保存用户信息（更直观，容易理解）
-
 在其他需要获取当前登录的用户信息的地方调用 `CasUtils.getLoginUserInfo()` 便能够获取到用户信息。
-
-#### ② 使用原生获取信息
-
-直接使用cas自带的方法 `AssertionHolder.getAssertion().getPrincipal()`方法便能获取登录Principal（注： `getAssertion()`方法获取到的对象可能为空，需要注意空指针异常。
 
 ### 4. 配置登出
 
@@ -284,7 +276,7 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 
 ### 5. 配置不过滤某些地址
 
-通过自定义`UrlPatternMatcherStrategy`和`pathPattern`来达到跳过验证的目的。
+通过自定义`ignorePattern`和`ignoreUrlPatternType`来达到跳过验证的目的。
 
 已经自带了一个路径排除策略（Ant规则，不懂请百度），可以只需要在 `CAS Authentication Filter` 中配置好`ignore-pattern` 和 `ignore-url-pattern-type`便能直接使用了，如果自带的不能够满足，请看末尾自定义教程。
 
@@ -296,7 +288,10 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 4. 验证使用redirect方式退出登录是否能够正确登出（表现为再次进入登录页面（如果回调页面需要登录的话）
 5. 验证在服务端直接退出登录以后，客户端是否需要重新登录
 
-### 9. 其他配置
+### 7. 与原有用户系统结合
+已经添加了一个`AutoAuthFilter`来方便结合了，具体如何去实现请看该类里边得相关说明
+
+### 8. 其他配置
 
 详见 **Github** (https://github.com/apereo/java-cas-client#client-configuration-using-webxml)
 
@@ -310,65 +305,7 @@ cas-config.ignore-url-pattern-type=your.project.path.cas.CustomExcludePathMatchS
 
 通过`setPattern()`将配置中的`ignorePattern`参数的内容给传进来，然后要通过`matches(url)`方法判断当前路径是不是不需要登录验证。
 
-```java
-package com.gahon.cas;
-
-import org.jasig.cas.client.authentication.UrlPatternMatcherStrategy;
-import org.springframework.util.AntPathMatcher;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-/**
- * 自定义路不需要登录的地址路径匹配类
- * <p>
- * 使用Spring自带的AntPathMatcher 做路径匹配
- *
- * @author Gahon
- * @date 2019/12/3
- */
-public class CustomExcludePathMatchStrategy implements UrlPatternMatcherStrategy {
-
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
-    private String[] patterns;
-
-    /**
-     * Execute the match between the given pattern and the url
-     *
-     * @param url 请求全路径(包含http和?后边的数据    the request url typically with query strings included
-     * @return true if match is successful
-     */
-    @Override
-    public boolean matches(String url) {
-        try {
-//            通过URL转换获取当前路径的path路径（即不包含host和?后边的内容）
-            final URI uri1 = new URI(url);
-            final String path = uri1.getPath();
-            for (String excludedPath : patterns) {
-                String uriPattern = excludedPath.trim();
-                if (pathMatcher.match(uriPattern.trim(), path)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * The pattern against which the url is compared
-     * 该 pattern 是通过 ignorePattern 注入的
-     *
-     * @param pattern 需要忽略的地址，在这里自定义为通过 ',' 分隔
-     */
-    @Override
-    public void setPattern(String pattern) {
-        this.patterns = pattern.trim().split(",");
-    }
-}
-```
+详细请看`AntPathMatchStrategy.java`文件的编写例子
 
 ## 四、 其他配置
 
@@ -383,3 +320,6 @@ public class CustomExcludePathMatchStrategy implements UrlPatternMatcherStrategy
 如果使用本文档附带的退出登录controller或logoutFilter，应该不会出现问题一，
 
 原因二的解决方法可以通过设置一个响应头 `response.setHeader("Cache-Control", "no-cache");` 来禁用浏览器缓存，比如将该代码添加到`CORSFilter`中便可解决。
+
+### 2. 在其他项目退出登录了，当前项目不会自动跳转到登录页面
+该问题可能是由于使用了ajax的原因，通过ajax进行获取数据遇到302跳转时，并不能够自动跳转，因此导致不会自动去登录页面，需要手动刷新页面，需要解决的话，添加一个全局ajax拦截，当请求码为302或者其他自定义信息时，手动跳转到登录界面。

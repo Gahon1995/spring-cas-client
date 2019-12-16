@@ -1,5 +1,6 @@
-package com.gahon.springmvc.cas.core;
+package com.gahon.springmvc.cas.core.util;
 
+import com.gahon.springmvc.cas.core.profile.UserProfile;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 
 /**

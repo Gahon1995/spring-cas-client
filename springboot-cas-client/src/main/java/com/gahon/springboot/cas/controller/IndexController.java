@@ -1,4 +1,4 @@
-package com.gahon.springboot.cas;
+package com.gahon.springboot.cas.controller;
 
 import com.gahon.springboot.cas.core.util.CasUtils;
 import com.gahon.springboot.cas.core.profile.UserProfile;
@@ -21,9 +21,13 @@ public class IndexController {
         return "用户未登录";
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return "test";
+    @GetMapping("/info")
+    public String info(){
+        final UserProfile userProfile = CasUtils.getLoginUserInfo();
+        if (userProfile != null) {
+            return "userProfile = " + userProfile;
+        }
+        return "用户信息为空";
     }
     @GetMapping("/ignore")
     public String test1(){

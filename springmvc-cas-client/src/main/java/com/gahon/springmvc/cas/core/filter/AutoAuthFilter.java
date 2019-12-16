@@ -1,7 +1,8 @@
-package com.gahon.springboot.cas.core.filter;
+package com.gahon.springmvc.cas.core.filter;
 
-import com.gahon.springboot.cas.core.util.CasUtils;
-import com.gahon.springboot.cas.core.profile.UserProfile;
+
+import com.gahon.springmvc.cas.core.profile.UserProfile;
+import com.gahon.springmvc.cas.core.util.CasUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class AutoAuthFilter implements Filter {
         final UserProfile userInfo = CasUtils.getLoginUserInfo();
         if (userInfo != null) {
 //            通过cas登录了，获取得到当前用户
-            log.debug("login-user: "+userInfo.toString());
+            log.debug("login-user: " + userInfo.toString());
 //            判断原系统是否登录，没登录的话做登录处理（通过session中的某些字段判断啥的)
 //            如果不判断原系统是否登录的话，会导致每次都会去做一次登录操作，使得效率较低。
 //            当然必须进一步判断当前登录的用户和cas登录的用户是否一致，不一致的话进行用户切换
@@ -39,7 +40,7 @@ public class AutoAuthFilter implements Filter {
 //            当通过cas-id没找到对应的用户时，应该利用cas的信息生成一个新用户，跳到一个注册界面进行新用户注册绑定到cas用户
 //            如果在这个地方登陆了原系统，那么请注意在退出登录的时候也必须做退出原系统的操作，否则有可能导致下次使用其他用户登录后用户信息还是之前登录的用户
 
-        }else{
+        } else {
 //            没有通过cas登录，说明该请求路径没有被cas拦截，说明原系统也不需要登录，不做处理
             log.debug("用户未登录");
         }
