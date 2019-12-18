@@ -16,10 +16,6 @@ public class CasUtils {
         THREAD_LOCAL.set(userProfile);
     }
 
-    public static UserProfile getProfile() {
-        return THREAD_LOCAL.get();
-    }
-
     public static UserProfile getLoginUserInfo() {
         return THREAD_LOCAL.get();
     }

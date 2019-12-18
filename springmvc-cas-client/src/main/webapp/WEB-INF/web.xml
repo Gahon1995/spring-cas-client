@@ -27,7 +27,6 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
         </init-param>
-
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
@@ -57,6 +56,23 @@
     </filter-mapping>
 
     <!-- ====================	单点登录配置开始	==================== -->
+    <!--    配置跨域设置，用于支持ajax请求接口同时传递cookie   -->
+    <filter>
+        <filter-name>CORS Filter</filter-name>
+        <filter-class>com.gahon.springmvc.cas.core.filter.CorsFilter</filter-class>
+    </filter>
+    <!--    用于判断当前请求是否是ajax请求并且是否是登录状态  -->
+    <filter>
+        <filter-name>Is AJAX Not Login Filter</filter-name>
+        <filter-class>com.gahon.springmvc.cas.core.filter.CasAjaxNotLoginFilter</filter-class>
+        <init-param>
+            <!-- 当前项目的主页地址，必须保证域名是当前项目的域名，
+                    如果当先项目主页地址与项目地址是分离的，请手动
+                    写controller在登录成功后跳转至前端页面    -->
+            <param-name>clientHostUrl</param-name>
+            <param-value>http://cas.client.com:8080</param-value>
+        </init-param>
+    </filter>
     <!--	配置单点登出	-->
     <!--	定义单点登出Filter (该必须放在最前边)	-->
     <filter>
@@ -75,7 +91,6 @@
     <!--	配置单点登录认证器	-->
     <filter>
         <filter-name>CAS Authentication Filter</filter-name>
-        <!--<filter-class>org.jasig.cas.client.authentication.Saml11AuthenticationFilter</filter-class>-->
         <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
         <init-param>
             <param-name>casServerLoginUrl</param-name>
@@ -99,7 +114,6 @@
 
     <filter>
         <filter-name>CAS Validation Filter</filter-name>
-        <!--<filter-class>org.jasig.cas.client.validation.Saml11TicketValidationFilter</filter-class>-->
         <filter-class>org.jasig.cas.client.validation.Cas30ProxyReceivingTicketValidationFilter</filter-class>
         <init-param>
             <param-name>casServerUrlPrefix</param-name>
@@ -165,6 +179,15 @@
         </init-param>
     </filter>
     <!--	配置过滤器拦截地址	-->
+    <!--    配置跨域和ajax判断，如果不需要可以不加载  -->
+    <filter-mapping>
+        <filter-name>CORS Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>Is AJAX Not Login Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <!--	单点登出过滤器， 必须放在第一位	-->
     <filter-mapping>
         <filter-name>CAS Single Sign Out Filter</filter-name>

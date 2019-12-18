@@ -1,6 +1,7 @@
 package com.gahon.springboot.cas.core;
 
 import com.gahon.springboot.cas.core.filter.AutoAuthFilter;
+import com.gahon.springboot.cas.core.filter.CasAjaxNotLoginFilter;
 import com.gahon.springboot.cas.core.filter.ContextThreadLocalFilter;
 import com.gahon.springboot.cas.core.util.CasUtils;
 import org.jasig.cas.client.boot.configuration.CasClientConfiguration;
@@ -39,6 +40,9 @@ public class CasConfiguration implements CasClientConfigurer {
 
     @Value("${cas-config.ignore-url-pattern-type:#{null}}")
     private String ignoreUrlPatternType;
+
+    @Value("${cas.client-host-url}")
+    private String clientHostUrl;
 
     /**
      * 配置登出过滤器
@@ -113,5 +117,16 @@ public class CasConfiguration implements CasClientConfigurer {
         autoAuthFilter.setOrder(6);
         autoAuthFilter.setUrlPatterns(Collections.singleton("/*"));
         return autoAuthFilter;
+    }
+
+    @Bean
+    public FilterRegistrationBean ajaxLoginFilter() {
+        FilterRegistrationBean ajaxFilter = new FilterRegistrationBean();
+        ajaxFilter.setFilter(new CasAjaxNotLoginFilter());
+        ajaxFilter.setOrder(-1);
+        Map<String, String> params = new HashMap<>(1);
+        params.put("clientHostUrl", clientHostUrl);
+        ajaxFilter.setInitParameters(params);
+        return ajaxFilter;
     }
 }
